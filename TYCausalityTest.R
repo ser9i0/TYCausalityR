@@ -21,6 +21,10 @@ source("stationarity.R",chdir=T)
 # La causalidad se analizará entre dos series temporales.
 # Por un lado la serie de estudio, y por otro la serie objetivo.
 
+# USAGE
+
+# ./TYCausalityTest.R datafile_path init_col end_col target_col
+# eg: ./TYCausalityTest.R data.csv 2 -1 3
 args<-commandArgs(trailingOnly=TRUE)
 
 if(length(args)==0){
@@ -32,32 +36,19 @@ init_col<-as.numeric(args[2])
 end_col<-as.numeric(args[3])
 target_col<-as.numeric(args[4])
 
-order_integration <- vector(mode="list", length=length(names(dataset)))
-names(order_integration) <- names(dataset)
-target_name<-names(dataset)[target_col]
-
 if( end_col == -1 )
 {
   end_col<-ncol(dataset)
 }
-
-#message("init_col=",init_col,", end_col=",end_col,", target_col=",target_col)
 
 if(init_col>end_col)
 {
   stop("Wrong INIT (",init_col,") and/or END (",end_col,") columns value.")
 }
 
-#if((target_col >= init_col) && (target_col <= end_col))
-#{
-#  stop("Wrong TARGET (",target_col,"), it must be out of the range [INIT,END] ([",init_col,",",end_col,"]).")
-#}
-
-# Plot all rows
-#plot(seq(1,nrow(dataset),1), dataset$"target1", type="l")
-
-# Plot first 10 values of "feature1"
-#plot(seq(1,10,1), cof[1:10,]$"feature1", type="l")
+order_integration <- vector(mode="list", length=length(names(dataset)))
+names(order_integration) <- names(dataset)
+target_name<-names(dataset)[target_col]
 
 message("# STATIONARITY TESTS ############################")
 
@@ -99,7 +90,6 @@ for( i in init_col:end_col )
   {
     message("....Cointegration: time-series ",target_name," and ",col_name," are cointegrated with significance level >=10%.")
   }
-  
 
   if( stationarity$max_order_integration >= target_order_integration )
   {
@@ -142,112 +132,10 @@ for( i in init_col:end_col )
   {
     next
   }
+
   # VARselect returns infomation criteria and final prediction error for 
   # sequential increasing the lag order up to a VAR(p)-proccess.
   var_select<-VARselect(dataset[,c(i,target_col)],lag=20,type="both")
-
-if(FALSE) {
-  message("-- v1 ---------------------------------------------")
-  v1<-VAR(dataset[,c(i,target_col)],p=1,type="both")
-  print(serial.test(v1))
-  print(1/roots(v1)[[1]])
-  print(1/roots(v1)[[2]])
-  message("-- v2 ---------------------------------------------")
-  v2<-VAR(dataset[,c(i,target_col)],p=2,type="both")
-  print(serial.test(v2))
-  print(1/roots(v2)[[1]])
-  print(1/roots(v2)[[2]])
-  message("-- v3 ---------------------------------------------")
-  v3<-VAR(dataset[,c(i,target_col)],p=3,type="both")
-  print(serial.test(v3))
-  print(1/roots(v3)[[1]])
-  print(1/roots(v3)[[2]])
-  message("-- v4 ---------------------------------------------")
-  v4<-VAR(dataset[,c(i,target_col)],p=4,type="both")
-  print(serial.test(v4))
-  print(1/roots(v4)[[1]])
-  print(1/roots(v4)[[2]])
-  message("-- v5 ---------------------------------------------")
-  v5<-VAR(dataset[,c(i,target_col)],p=5,type="both")
-  print(serial.test(v5))
-  print(1/roots(v5)[[1]])
-  print(1/roots(v5)[[2]])
-  message("-- v6 ---------------------------------------------")
-  v6<-VAR(dataset[,c(i,target_col)],p=6,type="both")
-  print(serial.test(v6))
-  print(1/roots(v6)[[1]])
-  print(1/roots(v6)[[2]])
-  message("-- v7 ---------------------------------------------")
-  v7<-VAR(dataset[,c(i,target_col)],p=7,type="both")
-  print(serial.test(v7))
-  print(1/roots(v7)[[1]])
-  print(1/roots(v7)[[2]])
-  message("-- v8 ---------------------------------------------")
-  v8<-VAR(dataset[,c(i,target_col)],p=8,type="both")
-  print(serial.test(v8))
-  print(1/roots(v8)[[1]])
-  print(1/roots(v8)[[2]])
-  message("-- v9 ---------------------------------------------")
-  v9<-VAR(dataset[,c(i,target_col)],p=9,type="both")
-  print(serial.test(v9))
-  print(1/roots(v9)[[1]])
-  print(1/roots(v9)[[2]])
-  message("-- v10 ---------------------------------------------")
-  v10<-VAR(dataset[,c(i,target_col)],p=10,type="both")
-  print(serial.test(v10))
-  print(1/roots(v10)[[1]])
-  print(1/roots(v10)[[2]])
-  message("-- v11 ---------------------------------------------")
-  v11<-VAR(dataset[,c(i,target_col)],p=11,type="both")
-  print(serial.test(v11))
-  print(1/roots(v11)[[1]])
-  print(1/roots(v11)[[2]])
-  message("-- v12 ---------------------------------------------")
-  v12<-VAR(dataset[,c(i,target_col)],p=12,type="both")
-  print(serial.test(v12))
-  print(1/roots(v12)[[1]])
-  print(1/roots(v12)[[2]])
-  message("-- v13 ---------------------------------------------")
-  v13<-VAR(dataset[,c(i,target_col)],p=13,type="both")
-  print(serial.test(v13))
-  print(1/roots(v13)[[1]])
-  print(1/roots(v13)[[2]])
-  message("-- v14 ---------------------------------------------")
-  v14<-VAR(dataset[,c(i,target_col)],p=14,type="both")
-  print(serial.test(v14))
-  print(1/roots(v14)[[1]])
-  print(1/roots(v14)[[2]])
-  message("-- v15 ---------------------------------------------")
-  v15<-VAR(dataset[,c(i,target_col)],p=15,type="both")
-  print(serial.test(v15))
-  print(1/roots(v15)[[1]])
-  print(1/roots(v15)[[2]])
-  message("-- v16 ---------------------------------------------")
-  v16<-VAR(dataset[,c(i,target_col)],p=16,type="both")
-  print(serial.test(v16))
-  print(1/roots(v16)[[1]])
-  print(1/roots(v16)[[2]])
-  message("-- v17 ---------------------------------------------")
-  v17<-VAR(dataset[,c(i,target_col)],p=17,type="both")
-  print(serial.test(v17))
-  print(1/roots(v17)[[1]])
-  print(1/roots(v17)[[2]])
-  message("-- v18 ---------------------------------------------")
-  v18<-VAR(dataset[,c(i,target_col)],p=18,type="both")
-  print(serial.test(v18))
-  print(1/roots(v18)[[1]])
-  print(1/roots(v18)[[2]])
-  message("-- v19 ---------------------------------------------")
-  v19<-VAR(dataset[,c(i,target_col)],p=19,type="both")
-  print(serial.test(v19))
-  print(1/roots(v19)[[1]])
-  print(1/roots(v19)[[2]])
-  message("-- v20 ---------------------------------------------")
-  v20<-VAR(dataset[,c(i,target_col)],p=20,type="both")
-  print(serial.test(v20))
-  print(1/roots(v20)[[1]])
-  print(1/roots(v20)[[2]])
-}
 
   # Among the infomation criteria, we find:
   # - AIC (Akaike Information criterion)
@@ -311,8 +199,6 @@ if(FALSE) {
   message("-----------------------------------------------")
 }
 
-#plot(seq(1,nrow(dataset),1), dataset[,4], ylim=c(0.5,2), type="l", col="black", lwd=2)
-#lines(seq(1,nrow(dataset),1), dataset[,7], col="blue", lty=2, lwd=1)
 legend("topleft",graph_labels,col=graph_colors,lty=1,bty="n")
 
 
